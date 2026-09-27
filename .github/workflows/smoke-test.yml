@@ -1,0 +1,18 @@
+name: Browser Smoke Test
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run build
+      - run: python3 -m http.server 3000 --directory out > /tmp/pdf-tools-http.log 2>&1 &
+      - run: npx playwright@1.55.0 install --with-deps chromium
+      - run: npx playwright@1.55.0 test tests/smoke.spec.js
