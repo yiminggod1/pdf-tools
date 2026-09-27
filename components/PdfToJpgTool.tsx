@@ -1,9 +1,8 @@
 "use client";
 
-import {useId, useState} from "react";
+import {useState} from "react";
 
 export default function PdfToJpgTool(){
- const id=useId();
  const [file,setFile]=useState<File|null>(null);
  const [busy,setBusy]=useState(false);
  const [msg,setMsg]=useState("");
@@ -63,8 +62,8 @@ export default function PdfToJpgTool(){
    <h2>PDF to JPG</h2>
    <p>Convert every PDF page into JPG images. Processing happens locally in your browser.</p>
    <div className="filePicker">
-    <input id={id} className="filePickerInput" type="file" accept=".pdf,application/pdf" onChange={e=>{setFile(e.target.files?.[0]||null);setMsg("")}}/>
-    <label className="filePickerButton" htmlFor={id}>Choose file</label>
+    <input id="pdf-to-jpg-file" className="filePickerInput" type="file" accept=".pdf,application/pdf" onChange={e=>{setFile(e.target.files?.[0]||null);setMsg("")}}/>
+    <label className="filePickerButton" htmlFor="pdf-to-jpg-file">Choose file</label>
     <span className="filePickerName">{file?file.name:"No file selected"}</span>
    </div>
    <button className="btn" disabled={!file||busy} onClick={run}>{busy?"Converting…":"Convert to JPG"}</button>
