@@ -1,0 +1,1 @@
+import type {MetadataRoute} from "next";export default function sitemap():MetadataRoute.Sitemap{const base="https://yiminggod1.github.io/pdf-tools";return["","merge-pdf","split-pdf","rotate-pdf","image-to-pdf","resize-image","compress-image"].map(p=>({url:base+(p?"/"+p:"")+"/",lastModified:new Date()}));}
