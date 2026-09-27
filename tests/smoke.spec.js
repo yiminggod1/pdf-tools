@@ -45,9 +45,12 @@ function makePdf() {
 
 test("PDF to JPG converts a real one-page PDF and downloads a valid ZIP", async ({ page }) => {
   await page.goto("http://127.0.0.1:3000/pdf-to-jpg/", { waitUntil: "domcontentloaded" });
-  const input = page.locator('input[type="file"]').first();
-  await expect(input).toBeAttached();
-  await input.setInputFiles({
+  const picker = page.locator(".filePickerButton").first();
+  await expect(picker).toBeVisible();
+  const chooserPromise = page.waitForEvent("filechooser");
+  await picker.click();
+  const chooser = await chooserPromise;
+  await chooser.setFiles({
     name: "smoke-test.pdf",
     mimeType: "application/pdf",
     buffer: makePdf()
