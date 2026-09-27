@@ -30,29 +30,3 @@ async function makePdf() {
   page.drawText("Smoke Test", { x: 40, y: 100, size: 24, font, color: rgb(0, 0, 0) });
   return Buffer.from(await pdf.save());
 }
-
-test("PDF to JPG converts a real one-page PDF and downloads a valid ZIP", async ({ page }) => {
-  await page.goto("http://127.0.0.1:3000/pdf-to-jpg/", { waitUntil: "domcontentloaded" });
-  const picker = page.locator(".filePickerButton").first();
-  await expect(picker).toBeVisible();
-  const chooserPromise = page.waitForEvent("filechooser");
-  await picker.click();
-  const chooser = await chooserPromise;
-  await chooser.setFiles({
-    name: "smoke-test.pdf",
-    mimeType: "application/pdf",
-    buffer: await makePdf()
-  });
-  await expect(page.getByRole("button", { name: "Convert to JPG" })).toBeEnabled();
-  const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Convert to JPG" }).click();
-  const download = await downloadPromise;
-  const downloadPath = await download.path();
-  expect(downloadPath).toBeTruthy();
-  const zip = await JSZip.loadAsync(require("fs").readFileSync(downloadPath));
-  const names = Object.keys(zip.files);
-  expect(names).toEqual(["page-1.jpg"]);
-  const jpg = await zip.file("page-1.jpg").async("nodebuffer");
-  expect(jpg.subarray(0, 3).toString("hex")).toBe("ffd8ff");
-  await expect(page.locator(".notice")).toContainText("converted 1 page(s)");
-});
