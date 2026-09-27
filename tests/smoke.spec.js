@@ -56,8 +56,8 @@ test("PDF to JPG converts a real one-page PDF and downloads a valid ZIP", async 
     buffer: makePdf()
   });
   await expect(page.getByRole("button", { name: "Convert to JPG" })).toBeEnabled();
+  const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Convert to JPG" }).click();
-  await page.waitForTimeout(5000);
-  console.log("[pdf-to-jpg-result]", await page.locator(".notice").textContent());
+  const download = await downloadPromise;
   await expect(page.locator(".notice")).toContainText("converted 1 page(s)");
 });
