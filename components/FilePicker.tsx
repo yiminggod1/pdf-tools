@@ -1,12 +1,12 @@
 "use client";
 
-import {useId,useRef} from "react";
+import {useId,useRef,type DragEvent} from "react";
 
 export default function FilePicker({accept,multiple=false,files,onChange}:{accept:string;multiple?:boolean;files:File[];onChange:(files:File[])=>void}){
  const id=useId();
  const inputRef=useRef<HTMLInputElement|null>(null);
  const pick=(next:File[])=>{onChange(multiple?next:next.slice(0,1));};
- const onDrop=(e:React.DragEvent<HTMLDivElement>)=>{
+ const onDrop=(e:DragEvent<HTMLDivElement>)=>{
   e.preventDefault();
   e.currentTarget.classList.remove("isDragging");
   pick(Array.from(e.dataTransfer.files||[]));
