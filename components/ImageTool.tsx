@@ -1,28 +1,9 @@
 "use client";
-import {useState} from "react";
-
+import {useState} from "react";import FilePicker from "./FilePicker";
 type Mode="resize"|"compress"|"convert";
 export default function ImageTool({mode}:{mode:Mode}){
  const [file,setFile]=useState<File|null>(null),[width,setWidth]=useState(""),[height,setHeight]=useState(""),[quality,setQuality]=useState("80"),[format,setFormat]=useState<"image/jpeg"|"image/png"|"image/webp">("image/jpeg"),[busy,setBusy]=useState(false),[msg,setMsg]=useState("");
- const run=async()=>{
-  if(!file)return; setBusy(true);setMsg("");
-  try{
-   const src=URL.createObjectURL(file);const img=new Image();
-   await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=src});
-   let w=width?Math.max(1,Number(width)):img.naturalWidth,h=height?Math.max(1,Number(height)):img.naturalHeight;
-   if(mode==="resize"&&width&&!height)h=Math.round(img.naturalHeight*w/img.naturalWidth);
-   if(mode==="resize"&&height&&!width)w=Math.round(img.naturalWidth*h/img.naturalHeight);
-   if(mode==="compress"){w=img.naturalWidth;h=img.naturalHeight}
-   const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;const ctx=canvas.getContext("2d");if(!ctx)throw new Error();
-   ctx.drawImage(img,0,0,w,h);URL.revokeObjectURL(src);
-   const outType=mode==="convert"?format:"image/jpeg",q=mode==="compress"?Number(quality)/100:.9;
-   const blob=await new Promise<Blob|null>(r=>canvas.toBlob(r,outType,q));if(!blob)throw new Error();
-   const ext=outType==="image/png"?"png":outType==="image/webp"?"webp":"jpg";const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`image-${mode}.${ext}`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-   setMsg(`Done — ${Math.round(blob.size/1024)} KB output created in your browser.`);
-  }catch{setMsg("Could not process this image. Try a JPG, PNG or WebP file.")}finally{setBusy(false)}
- };
+ const run=async()=>{if(!file)return;setBusy(true);setMsg("");try{const src=URL.createObjectURL(file);const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=src});let w=width?Math.max(1,Number(width)):img.naturalWidth,h=height?Math.max(1,Number(height)):img.naturalHeight;if(mode==="resize"&&width&&!height)h=Math.round(img.naturalHeight*w/img.naturalWidth);if(mode==="resize"&&height&&!width)w=Math.round(img.naturalWidth*h/img.naturalHeight);if(mode==="compress"){w=img.naturalWidth;h=img.naturalHeight}const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;const ctx=canvas.getContext("2d");if(!ctx)throw new Error();ctx.drawImage(img,0,0,w,h);URL.revokeObjectURL(src);const outType=mode==="convert"?format:"image/jpeg",q=mode==="compress"?Number(quality)/100:.9;const blob=await new Promise<Blob|null>(r=>canvas.toBlob(r,outType,q));if(!blob)throw new Error();const ext=outType==="image/png"?"png":outType==="image/webp"?"webp":"jpg";const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=`image-${mode}.${ext}`;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);setMsg(`Done — ${Math.round(blob.size/1024)} KB output created in your browser.`)}catch{setMsg("Could not process this image. Try a JPG, PNG or WebP file.")}finally{setBusy(false)}};
  const title={resize:"Resize Image",compress:"Compress Image",convert:"Convert Image"}[mode];
- return <div><div className="drop"><h2>{title}</h2><p>Select an image. Processing stays on your device.</p><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>{setFile(e.target.files?.[0]||null);setMsg("")}}/>
- {file&&<div className="controls">{mode!=="compress"&&<><label>Width <input value={width} onChange={e=>setWidth(e.target.value)} inputMode="numeric" placeholder="auto"/></label><label>Height <input value={height} onChange={e=>setHeight(e.target.value)} inputMode="numeric" placeholder="auto"/></label></>}{mode==="compress"&&<label>Quality <input type="range" min="20" max="95" value={quality} onChange={e=>setQuality(e.target.value)}/><span>{quality}%</span></label>}{mode==="convert"&&<label>Format <select value={format} onChange={e=>setFormat(e.target.value as typeof format)}><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></label>}</div>}
- <button className="btn" disabled={!file||busy} onClick={run}>{busy?"Processing…":"Process image"}</button></div>{msg&&<div className="notice">{msg}</div>}</div>
+ return <div><div className="drop"><h2>{title}</h2><p>Select an image. Processing stays on your device.</p><FilePicker accept="image/jpeg,image/png,image/webp" files={file?[file]:[]} onChange={next=>{setFile(next[0]||null);setMsg("")}}/>{file&&<div className="controls">{mode!=="compress"&&<><label>Width <input value={width} onChange={e=>setWidth(e.target.value)} inputMode="numeric" placeholder="auto"/></label><label>Height <input value={height} onChange={e=>setHeight(e.target.value)} inputMode="numeric" placeholder="auto"/></label></>}{mode==="compress"&&<label>Quality <input type="range" min="20" max="95" value={quality} onChange={e=>setQuality(e.target.value)}/><span>{quality}%</span></label>}{mode==="convert"&&<label>Format <select value={format} onChange={e=>setFormat(e.target.value as typeof format)}><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></label>}</div>}<button className="btn" disabled={!file||busy} onClick={run}>{busy?"Processing…":"Process image"}</button></div>{msg&&<div className="notice">{msg}</div>}</div>
 }
