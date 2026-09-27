@@ -25,7 +25,7 @@ export default function PdfPagePreviewTool(){
   previews.forEach(p=>URL.revokeObjectURL(p.url));
   setBusy(true); setMsg("");
   try{
-   const pdfjs=await import("pdfjs-dist/build/pdf");
+   // @ts-expect-error pdfjs-dist 3.x does not ship declarations for this browser entry.\n   const pdfjs=await import("pdfjs-dist/build/pdf");
    const data=new Uint8Array(await selectedFile.arrayBuffer());
    const pdf=await pdfjs.getDocument({data,disableWorker:true}).promise;
    const next:Preview[]=[];
