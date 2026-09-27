@@ -44,7 +44,17 @@ function makePdf() {
 }
 
 test("PDF to JPG converts a real one-page PDF and downloads a valid ZIP", async ({ page }) => {
+  page.on("console", msg => console.log("[browser-console]", msg.type(), msg.text()));
+  page.on("pageerror", err => console.log("[browser-pageerror]", err.message));
   await page.goto("http://127.0.0.1:3000/pdf-tools/pdf-to-jpg/", { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(3000);
+  const html = await page.content();
+  console.log("[pdf-to-jpg-debug]", JSON.stringify({
+    hasHeading: html.includes("PDF to JPG"),
+    hasFileInput: html.includes('type="file"'),
+    hasFilePicker: html.includes("filePicker"),
+    htmlLength: html.length
+  }));
   const input = page.locator('input[type="file"]').first();
   await expect(input).toBeAttached();
   await input.setInputFiles({
