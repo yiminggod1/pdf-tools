@@ -1,5 +1,6 @@
 const { test, expect } = require("@playwright/test");
 const JSZip = require("jszip");
+const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
 
 const routes = [
   "merge-pdf","split-pdf","rotate-pdf","image-to-pdf","pdf-to-jpg","resize-image","compress-image","convert-image",
@@ -22,26 +23,12 @@ test("all 32 tool pages load with English UI", async ({ page }) => {
   }
 });
 
-function makePdf() {
-  const stream = "BT /F1 24 Tf 40 100 Td (Smoke Test) Tj ET\n";
-  const objects = [
-    "<< /Type /Catalog /Pages 2 0 R >>",
-    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
-    "<< /Length " + Buffer.byteLength(stream, "binary") + " >>\nstream\n" + stream + "endstream",
-    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>"
-  ];
-  let pdf = "%PDF-1.4\n";
-  const offsets = [0];
-  for (let i = 0; i < objects.length; i++) {
-    offsets.push(Buffer.byteLength(pdf, "binary"));
-    pdf += (i + 1) + " 0 obj\n" + objects[i] + "\nendobj\n";
-  }
-  const xref = Buffer.byteLength(pdf, "binary");
-  pdf += "xref\n0 6\n0000000000 65535 f \n";
-  for (let i = 1; i <= 5; i++) pdf += String(offsets[i]).padStart(10, "0") + " 00000 n \n";
-  pdf += "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF";
-  return Buffer.from(pdf, "binary");
+async function makePdf() {
+  const pdf = await PDFDocument.create();
+  const page = pdf.addPage([300, 200]);
+  const font = await pdf.embedFont(StandardFonts.Helvetica);
+  page.drawText("Smoke Test", { x: 40, y: 100, size: 24, font, color: rgb(0, 0, 0) });
+  return Buffer.from(await pdf.save());
 }
 
 test("PDF to JPG converts a real one-page PDF and downloads a valid ZIP", async ({ page }) => {
@@ -54,7 +41,7 @@ test("PDF to JPG converts a real one-page PDF and downloads a valid ZIP", async 
   await chooser.setFiles({
     name: "smoke-test.pdf",
     mimeType: "application/pdf",
-    buffer: makePdf()
+    buffer: await makePdf()
   });
   await expect(page.getByRole("button", { name: "Convert to JPG" })).toBeEnabled();
   const downloadPromise = page.waitForEvent("download");
