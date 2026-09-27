@@ -2,30 +2,6 @@
 
 import {useRef,useState} from "react";
 
-type PdfJsWindow=Window&{pdfjsLib?:any;["pdfjs-dist/build/pdf"]?:any};
-
-let pdfJsPromise:Promise<any>|null=null;
-
-function loadPdfJs(){
- if(pdfJsPromise)return pdfJsPromise;
- pdfJsPromise=new Promise((resolve,reject)=>{
-  const win=window as PdfJsWindow;
-  const lib=win.pdfjsLib||win["pdfjs-dist/build/pdf"];
-  if(lib){resolve(lib);return;}
-  const script=document.createElement("script");
-  script.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
-  script.async=true;
-  script.onload=()=>{
-   const lib=win.pdfjsLib||win["pdfjs-dist/build/pdf"];
-   if(lib)resolve(lib);
-   else reject(new Error("PDF.js did not load"));
-  };
-  script.onerror=()=>reject(new Error("PDF.js failed to load"));
-  document.head.appendChild(script);
- });
- return pdfJsPromise;
-}
-
 export default function PdfToJpgTool(){
  const [file,setFile]=useState<File|null>(null);
  const [busy,setBusy]=useState(false);
@@ -49,7 +25,7 @@ export default function PdfToJpgTool(){
   try{
    const [{default:JSZip},pdfjs]=await Promise.all([
     import("jszip"),
-    loadPdfJs()
+    import("pdfjs-dist/build/pdf")
    ]);
    pdfjs.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
    const data=new Uint8Array(await selected.arrayBuffer());
@@ -78,11 +54,11 @@ export default function PdfToJpgTool(){
    save(await zip.generateAsync({type:"blob"}),"pdf-pages-jpg.zip");
    setMsg(`Done — converted ${pdf.numPages} page(s) to JPG in your browser.`);
   }catch{
-   setMsg("Could not convert this PDF. Check your connection and that the file is a valid PDF, then try again.");
+   setMsg("Could not convert this PDF. Check that the file is valid and try again.");
   }finally{
    setBusy(false);
   }
- }
+ };
 
  return <div>
   <div className="drop">
