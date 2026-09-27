@@ -1,0 +1,3 @@
+import ImageSnippetTool from "../../components/ImageSnippetTool";import AdSlot from "../../components/AdSlot";import RelatedTools from "../../components/RelatedTools";
+export const metadata={title:"Image to Markdown",description:"Image to Markdown with browser-local processing."};
+export default function Page(){return <main className="toolpage"><a href="/">← All tools</a><h1>Image to Markdown</h1><p className="lead">Image to Markdown with a lightweight browser-based workflow.</p><AdSlot/><ImageSnippetTool kind="markdown"/><AdSlot/><section className="content"><h2>How it works</h2><p>This focused utility handles a common document or image workflow directly in your browser. Your supported source stays on your device during processing.</p></section><RelatedTools/></main>}
