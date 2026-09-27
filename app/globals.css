@@ -40,3 +40,6 @@
 .filePickerClear:focus-visible{outline:3px solid #8bb8ee;outline-offset:2px}
 .filePickerName{flex:1;text-align:left}
 @media(max-width:520px){.filePickerName{text-align:center}.filePickerClear{width:100%}}
+
+.snippetActions{display:flex;justify-content:flex-end;margin-top:10px}
+.snippetActions .miniBtn{padding:9px 13px}
