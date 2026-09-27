@@ -2,7 +2,7 @@
 
 import {useRef,useState} from "react";
 
-type PdfJsWindow=Window&{pdfjsLib?:any};
+type PdfJsWindow=Window&{pdfjsLib?:any;["pdfjs-dist/build/pdf"]?:any};
 
 let pdfJsPromise:Promise<any>|null=null;
 
@@ -10,12 +10,14 @@ function loadPdfJs(){
  if(pdfJsPromise)return pdfJsPromise;
  pdfJsPromise=new Promise((resolve,reject)=>{
   const win=window as PdfJsWindow;
-  if(win.pdfjsLib){resolve(win.pdfjsLib);return;}
+  const lib=win.pdfjsLib||win["pdfjs-dist/build/pdf"];
+  if(lib){resolve(lib);return;}
   const script=document.createElement("script");
   script.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
   script.async=true;
   script.onload=()=>{
-   if(win.pdfjsLib)resolve(win.pdfjsLib);
+   const lib=win.pdfjsLib||win["pdfjs-dist/build/pdf"];
+   if(lib)resolve(lib);
    else reject(new Error("PDF.js did not load"));
   };
   script.onerror=()=>reject(new Error("PDF.js failed to load"));
