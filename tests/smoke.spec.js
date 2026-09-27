@@ -8,7 +8,7 @@ const routes = [
   "add-blank-pages-to-pdf","image-to-html","image-to-markdown","image-to-css"
 ];
 
-test("all 34 tool pages load with English UI", async ({ page }) => {
+test("all 33 tool pages load with English UI", async ({ page }) => {
   for (const route of routes) {
     await page.goto("http://127.0.0.1:3000/" + route + "/", { waitUntil: "networkidle" });
     await expect(page.locator("h1")).toBeVisible();
