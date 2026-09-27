@@ -11,7 +11,7 @@ const routes = [
 
 test("all 32 tool pages load with English UI", async ({ page }) => {
   for (const route of routes) {
-    await page.goto("http://127.0.0.1:3000/pdf-tools/" + route + "/", { waitUntil: "networkidle" });
+    await page.goto("http://127.0.0.1:3000/" + route + "/", { waitUntil: "networkidle" });
     await expect(page.locator("h1")).toBeVisible();
     await expect(page.locator("body")).not.toContainText("選擇文件");
     await expect(page.locator("body")).not.toContainText("未選擇任何文件");
@@ -44,17 +44,7 @@ function makePdf() {
 }
 
 test("PDF to JPG converts a real one-page PDF and downloads a valid ZIP", async ({ page }) => {
-  page.on("console", msg => console.log("[browser-console]", msg.type(), msg.text()));
-  page.on("pageerror", err => console.log("[browser-pageerror]", err.message));
-  await page.goto("http://127.0.0.1:3000/pdf-tools/pdf-to-jpg/", { waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(3000);
-  const html = await page.content();
-  console.log("[pdf-to-jpg-debug]", JSON.stringify({
-    hasHeading: html.includes("PDF to JPG"),
-    hasFileInput: html.includes('type="file"'),
-    hasFilePicker: html.includes("filePicker"),
-    htmlLength: html.length
-  }));
+  await page.goto("http://127.0.0.1:3000/pdf-to-jpg/", { waitUntil: "domcontentloaded" });
   const input = page.locator('input[type="file"]').first();
   await expect(input).toBeAttached();
   await input.setInputFiles({
