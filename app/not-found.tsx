@@ -1,0 +1,1 @@
+import Link from "next/link";export default function NotFound(){return <main className="toolpage"><h1>Page not found</h1><p className="lead">The page you requested does not exist or has moved.</p><Link className="btn" href="/">Back to PDF Tools</Link></main>}
