@@ -28,9 +28,8 @@ export default function PdfToJpgTool(){
     // @ts-expect-error pdfjs-dist 3.x does not ship declarations for this browser entry.
     import("pdfjs-dist/build/pdf")
    ]);
-   pdfjs.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
    const data=new Uint8Array(await selected.arrayBuffer());
-   const pdf=await pdfjs.getDocument({data}).promise;
+   const pdf=await pdfjs.getDocument({data,disableWorker:true}).promise;
    const zip=new JSZip();
 
    for(let i=1;i<=pdf.numPages;i++){
