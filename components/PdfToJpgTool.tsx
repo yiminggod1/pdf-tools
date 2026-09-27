@@ -13,7 +13,7 @@ export default function PdfToJpgTool(){
   try{
    const pdfjs=(await import("pdfjs-dist/legacy/build/pdf")) as PdfJsModule;
    const data=new Uint8Array(await files[0].arrayBuffer());
-   const pdf=await pdfjs.getDocument({data,disableWorker:true}).promise;
+   const pdf=await pdfjs.getDocument({data}).promise;
    const zip=new JSZip();
    for(let i=1;i<=pdf.numPages;i++){
     const page=await pdf.getPage(i);
