@@ -1,9 +1,10 @@
 "use client";
-import {useState} from "react";
+import {useEffect,useState} from "react";
 import FilePicker from "./FilePicker";
 type Mode="resize"|"compress"|"convert";
 export default function ImageTool({mode}:{mode:Mode}){
  const [file,setFile]=useState<File|null>(null),[width,setWidth]=useState(""),[height,setHeight]=useState(""),[quality,setQuality]=useState("80"),[format,setFormat]=useState<"image/jpeg"|"image/png"|"image/webp">("image/jpeg"),[busy,setBusy]=useState(false),[msg,setMsg]=useState(""),[original,setOriginal]=useState("");
+ useEffect(()=>{if(!file){setOriginal("");return}const u=URL.createObjectURL(file),img=new Image();img.onload=()=>{setOriginal(`${img.naturalWidth} × ${img.naturalHeight}px`);URL.revokeObjectURL(u)};img.onerror=()=>{setOriginal("Unknown dimensions");URL.revokeObjectURL(u)};img.src=u;return()=>URL.revokeObjectURL(u)},[file]);
  const run=async()=>{if(!file)return;setBusy(true);setMsg("");try{
   const src=URL.createObjectURL(file),img=new Image();
   await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=src});
