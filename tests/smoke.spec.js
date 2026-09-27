@@ -23,11 +23,12 @@ test("all 32 tool pages load with English UI", async ({ page }) => {
 });
 
 function makePdf() {
+  const stream = "BT /F1 24 Tf 40 100 Td (Smoke Test) Tj ET\n";
   const objects = [
     "<< /Type /Catalog /Pages 2 0 R >>",
     "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
     "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
-    "<< /Length 44 >>\nstream\nBT /F1 24 Tf 40 100 Td (Smoke Test) Tj ET\nendstream",
+    "<< /Length " + Buffer.byteLength(stream, "binary") + " >>\nstream\n" + stream + "endstream",
     "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>"
   ];
   let pdf = "%PDF-1.4\n";
