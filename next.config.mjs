@@ -5,10 +5,8 @@ const nextConfig={
   basePath:"/pdf-tools",
   assetPrefix:"/pdf-tools/",
   images:{unoptimized:true},
-  webpack:(config,{isServer})=>{
-    if(!isServer){
-      config.resolve.fallback={...(config.resolve.fallback||{}),canvas:false};
-    }
+  webpack:(config)=>{
+    config.resolve.alias={...(config.resolve.alias||{}),canvas:false};
     return config;
   }
 };
