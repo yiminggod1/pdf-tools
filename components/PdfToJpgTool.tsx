@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import {useRef,useState} from "react";
 
 type PdfJsWindow=Window&{pdfjsLib?:any};
 
@@ -28,6 +28,7 @@ export default function PdfToJpgTool(){
  const [file,setFile]=useState<File|null>(null);
  const [busy,setBusy]=useState(false);
  const [msg,setMsg]=useState("");
+ const inputRef=useRef<HTMLInputElement|null>(null);
 
  const save=(blob:Blob,name:string)=>{
   const url=URL.createObjectURL(blob);
@@ -39,7 +40,8 @@ export default function PdfToJpgTool(){
  };
 
  const run=async()=>{
-  if(!file)return;
+  const selected=inputRef.current?.files?.[0]||file;
+  if(!selected){setMsg("Choose a PDF file first.");return;}
   setBusy(true);
   setMsg("");
   try{
@@ -48,7 +50,7 @@ export default function PdfToJpgTool(){
     loadPdfJs()
    ]);
    pdfjs.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-   const data=new Uint8Array(await file.arrayBuffer());
+   const data=new Uint8Array(await selected.arrayBuffer());
    const pdf=await pdfjs.getDocument({data}).promise;
    const zip=new JSZip();
 
@@ -85,11 +87,11 @@ export default function PdfToJpgTool(){
    <h2>PDF to JPG</h2>
    <p>Convert every PDF page into JPG images. Processing happens locally in your browser.</p>
    <div className="filePicker">
-    <input id="pdf-to-jpg-file" className="filePickerInput" type="file" accept=".pdf,application/pdf" onChange={e=>{setFile(e.target.files?.[0]||null);setMsg("")}}/>
+    <input ref={inputRef} id="pdf-to-jpg-file" className="filePickerInput" type="file" accept=".pdf,application/pdf" onChange={e=>{setFile(e.target.files?.[0]||null);setMsg("")}}/>
     <label className="filePickerButton" htmlFor="pdf-to-jpg-file">Choose file</label>
     <span className="filePickerName">{file?file.name:"No file selected"}</span>
    </div>
-   <button className="btn" disabled={!file||busy} onClick={run}>{busy?"Converting…":"Convert to JPG"}</button>
+   <button className="btn" disabled={busy} onClick={run}>{busy?"Converting…":"Convert to JPG"}</button>
   </div>
   {file&&<div className="files"><div className="file"><span>{file.name}</span><span>{Math.max(1,Math.round(file.size/1024))} KB</span></div></div>}
   {msg&&<div className="notice">{msg}</div>}
