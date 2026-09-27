@@ -1,1 +1,1 @@
-export default function AdSlot({label="Advertisement"}:{label?:string}){return <div className="ad" aria-label={label}><span>{label}</span></div>}
+export default function AdSlot({label="Advertisement",placement="reserved"}:{label?:string;placement?:string}){return <div className="ad" data-ad-placement={placement} data-ad-ready="true" aria-label={label}><span>{label}</span></div>}
