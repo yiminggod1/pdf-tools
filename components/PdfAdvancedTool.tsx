@@ -3,7 +3,7 @@ import {useState} from "react";import {PDFDocument,StandardFonts,rgb,degrees} fr
 type Mode="add"|"reorder"|"watermark"|"number"|"metadata"|"blank";
 export default function PdfAdvancedTool({mode}:{mode:Mode}){
  const [files,setFiles]=useState<File[]>([]);const [value,setValue]=useState("");const [busy,setBusy]=useState(false);const [msg,setMsg]=useState("");
- const save=(b:Uint8Array,n:string)=>{const u=URL.createObjectURL(new Blob([b],{type:"application/pdf"})),a=document.createElement("a");a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
+ const save=(b:Uint8Array,n:string)=>{const buffer=new ArrayBuffer(b.byteLength);new Uint8Array(buffer).set(b);const u=URL.createObjectURL(new Blob([buffer],{type:"application/pdf"})),a=document.createElement("a");a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
  const run=async()=>{if(!files.length)return;setBusy(true);setMsg("");try{const src=await PDFDocument.load(await files[0].arrayBuffer());
   if(mode==="blank"){const count=Math.max(1,Math.min(50,Number(value)||1));for(let i=0;i<count;i++)src.addPage();save(await src.save(),"with-blank-pages.pdf")}
   else if(mode==="add"){if(files.length<2)throw new Error();const add=await PDFDocument.load(await files[1].arrayBuffer());const pages=await src.copyPages(add,add.getPageIndices());pages.forEach(p=>src.addPage(p));save(await src.save(),"pdf-with-pages.pdf")}
