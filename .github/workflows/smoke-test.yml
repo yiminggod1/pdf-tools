@@ -14,5 +14,5 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: python3 -m http.server 3000 --directory out > /tmp/pdf-tools-http.log 2>&1 &
-      - run: npx playwright@1.55.0 install --with-deps chromium
-      - run: npx playwright@1.55.0 test tests/smoke.spec.js
+      - run: npx -y @playwright/test@1.55.0 install --with-deps chromium
+      - run: npx -y @playwright/test@1.55.0 test tests/smoke.spec.js
