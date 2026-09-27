@@ -7,7 +7,7 @@ export default function PdfPageTool({mode}:{mode:"delete"|"extract"}){
   const nums=pages.split(",").flatMap(x=>{const [a,b]=x.trim().split("-").map(Number);if(!a)return [];if(b&&b>=a)return Array.from({length:b-a+1},(_,i)=>a+i);return [a]}).filter(n=>n>=1&&n<=count);
   if(!nums.length)throw new Error();
   const keep=Array.from({length:count},(_,i)=>i+1);
-  const selected=mode==="extract"?nums:keep.filter(n=>!nums.includes(n));
+  const unique=Array.from(new Set(nums));const selected=mode==="extract"?unique:keep.filter(n=>!unique.includes(n));
   if(!selected.length)throw new Error();
   const out=await PDFDocument.create();const copied=await out.copyPages(src,selected.map(n=>n-1));copied.forEach(p=>out.addPage(p));
   const data=await out.save();const buffer=new ArrayBuffer(data.byteLength);new Uint8Array(buffer).set(data);const blob=new Blob([buffer],{type:"application/pdf"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=mode==="extract"?"extracted-pages.pdf":"pages-removed.pdf";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);setMsg(`Done — processed ${count} page(s) locally.`);
