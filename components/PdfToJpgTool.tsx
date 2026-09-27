@@ -25,6 +25,7 @@ export default function PdfToJpgTool(){
   try{
    const [{default:JSZip},pdfjs]=await Promise.all([
     import("jszip"),
+    // @ts-expect-error pdfjs-dist 3.x does not ship declarations for this browser entry.
     import("pdfjs-dist/build/pdf")
    ]);
    pdfjs.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
