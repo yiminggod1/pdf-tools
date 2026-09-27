@@ -7,7 +7,7 @@ const nextConfig={
   images:{unoptimized:true},
   webpack:(config,{isServer})=>{
     if(!isServer){
-      config.resolve.alias={...(config.resolve.alias||{}),canvas:false};
+      config.resolve.fallback={...(config.resolve.fallback||{}),canvas:false};
     }
     return config;
   }
