@@ -1,8 +1,8 @@
 "use client";
-import {useState} from "react";import {PDFDocument,degrees} from "pdf-lib";import JSZip from "jszip";
+import {useState} from "react";import {PDFDocument,degrees} from "pdf-lib";import JSZip from "jszip";import FilePicker from "./FilePicker";
 export default function FileTool({mode}:{mode:"merge"|"split"|"rotate"|"imagepdf"}) {
  const [files,setFiles]=useState<File[]>([]);const [busy,setBusy]=useState(false);const [msg,setMsg]=useState("");
- const pick=(e:React.ChangeEvent<HTMLInputElement>)=>{setFiles(Array.from(e.target.files||[]));setMsg("")};
+ const pick=(next:File[])=>{setFiles(next);setMsg("")};
  const save=(blob:Blob,name:string)=>{const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
  const makeBlob=(data:Uint8Array,type:string)=>{const buffer=new ArrayBuffer(data.byteLength);new Uint8Array(buffer).set(data);return new Blob([buffer],{type})};
  const run=async()=>{if(!files.length)return;setBusy(true);setMsg("");try{
@@ -12,5 +12,5 @@ export default function FileTool({mode}:{mode:"merge"|"split"|"rotate"|"imagepdf
   else {const src=await PDFDocument.load(await files[0].arrayBuffer());src.getPages().forEach(p=>p.setRotation(degrees((p.getRotation().angle+90)%360)));save(makeBlob(await src.save(),"application/pdf"),"rotated.pdf");}
   setMsg("Done — your file was created in your browser.");}catch{setMsg("Could not process this file. Check the format, file count and PDF validity, then try again.")}finally{setBusy(false)}};
  const accept=mode==="imagepdf"?".jpg,.jpeg,.png":".pdf";const title={merge:"Merge PDF",split:"Split PDF",rotate:"Rotate PDF",imagepdf:"Images to PDF"}[mode];
- return <div><div className="drop"><h2>{title}</h2><p>Select your files. Processing happens locally in your browser.</p><input type="file" multiple={mode==="merge"||mode==="imagepdf"} accept={accept} onChange={pick}/>{files.length>0&&<p className="filecount">{files.length} file(s) selected</p>}<button className="btn" disabled={!files.length||busy||(mode==="merge"&&files.length<2)} onClick={run}>{busy?"Processing…":mode==="split"?"Create ZIP":"Process files"}</button></div>{files.length>0&&<div className="files">{files.map((f,i)=><div className="file" key={i}><span>{f.name}</span><span>{Math.max(1,Math.round(f.size/1024))} KB</span></div>)}</div>}{msg&&<div className="notice">{msg}</div>}</div>
+ return <div><div className="drop"><h2>{title}</h2><p>Select your files. Processing happens locally in your browser.</p><FilePicker accept={accept} multiple={mode==="merge"||mode==="imagepdf"} files={files} onChange={pick}/>{files.length>0&&<p className="filecount">{files.length} file(s) selected</p>}<button className="btn" disabled={!files.length||busy||(mode==="merge"&&files.length<2)} onClick={run}>{busy?"Processing…":mode==="split"?"Create ZIP":"Process files"}</button></div>{files.length>0&&<div className="files">{files.map((f,i)=><div className="file" key={i}><span>{f.name}</span><span>{Math.max(1,Math.round(f.size/1024))} KB</span></div>)}</div>}{msg&&<div className="notice">{msg}</div>}</div>
 }
