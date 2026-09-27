@@ -1,0 +1,16 @@
+"use client";
+import {useState} from "react";import {PDFDocument,StandardFonts,rgb,degrees} from "pdf-lib";
+type Mode="add"|"reorder"|"watermark"|"number"|"metadata";
+export default function PdfAdvancedTool({mode}:{mode:Mode}){
+ const [files,setFiles]=useState<File[]>([]);const [value,setValue]=useState("");const [busy,setBusy]=useState(false);const [msg,setMsg]=useState("");
+ const save=(b:Uint8Array,n:string)=>{const u=URL.createObjectURL(new Blob([b],{type:"application/pdf"})),a=document.createElement("a");a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
+ const run=async()=>{if(!files.length)return;setBusy(true);setMsg("");try{const src=await PDFDocument.load(await files[0].arrayBuffer());
+  if(mode==="add"){if(files.length<2)throw new Error();const add=await PDFDocument.load(await files[1].arrayBuffer());const pages=await src.copyPages(add,add.getPageIndices());pages.forEach(p=>src.addPage(p));save(await src.save(),"pdf-with-pages.pdf")}
+  else if(mode==="reorder"){const nums=value.split(",").map(x=>Number(x.trim())-1);if(nums.length!==src.getPageCount()||nums.some(x=>x<0||x>=src.getPageCount()))throw new Error();const out=await PDFDocument.create();const pages=await out.copyPages(src,nums);pages.forEach(p=>out.addPage(p));save(await out.save(),"reordered.pdf")}
+  else if(mode==="watermark"){const font=await src.embedFont(StandardFonts.Helvetica);src.getPages().forEach(p=>{const text=value||"CONFIDENTIAL";p.drawText(text,{x:50,y:p.getHeight()/2,font,size:34,color:rgb(.6,.6,.6),rotate:degrees(35),opacity:.35})});save(await src.save(),"watermarked.pdf")}
+  else if(mode==="number"){const font=await src.embedFont(StandardFonts.Helvetica);src.getPages().forEach((p,i)=>p.drawText(String(i+1),{x:p.getWidth()/2-5,y:20,font,size:10,color:rgb(.3,.3,.3)}));save(await src.save(),"numbered.pdf")}
+  else {const title=value||"PDF Tools document";src.setTitle(title);save(await src.save(),"metadata-edited.pdf")}
+  setMsg("Done — your PDF was created in your browser.");
+ }catch{setMsg("Could not process the PDF. Check the files and settings, then try again.")}finally{setBusy(false)}};
+ return <div className="drop"><h2>{mode==="add"?"Add Pages to PDF":mode==="reorder"?"Reorder PDF Pages":mode==="watermark"?"Watermark PDF":mode==="number"?"Number PDF Pages":"Edit PDF Metadata"}</h2><p>Processing happens locally in your browser.</p><input type="file" accept=".pdf" multiple={mode==="add"} onChange={e=>setFiles(Array.from(e.target.files||[]))}/>{mode==="reorder"&&<input value={value} onChange={e=>setValue(e.target.value)} placeholder="Order, e.g. 3,1,2,4"/>}{mode==="watermark"&&<input value={value} onChange={e=>setValue(e.target.value)} placeholder="Watermark text"/>}{mode==="metadata"&&<input value={value} onChange={e=>setValue(e.target.value)} placeholder="Document title"/>}<button className="btn" disabled={!files.length||busy||(mode==="add"&&files.length<2)} onClick={run}>{busy?"Processing…":"Process PDF"}</button>{msg&&<div className="notice">{msg}</div>}</div>
+}
