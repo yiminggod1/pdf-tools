@@ -43,3 +43,5 @@
 
 .snippetActions{display:flex;justify-content:flex-end;margin-top:10px}
 .snippetActions .miniBtn{padding:9px 13px}
+
+.globalAdWrap{max-width:1200px;margin:0 auto;padding:0 20px}.globalAdWrap .ad{margin:24px 0 0;min-height:82px;background:linear-gradient(145deg,#e7edf5,#dfe7f1);border-color:#b8c7d8}.globalAdWrap .ad span{background:#d4deea}@media(max-width:700px){.globalAdWrap{padding:0 14px}.globalAdWrap .ad{min-height:70px}}
