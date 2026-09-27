@@ -1,0 +1,3 @@
+import PdfPageTool from "../../components/PdfPageTool";import AdSlot from "../../components/AdSlot";
+export const metadata={title:"Extract Pages from PDF Online Free",description:"Extract selected PDF pages into a new document in your browser."};
+export default function Page(){return <main className="toolpage"><a href="/">← All tools</a><h1>Extract Pages from PDF</h1><p className="lead">Create a new PDF from selected pages, with processing performed locally.</p><AdSlot/><PdfPageTool mode="extract"/><AdSlot/><section className="content"><h2>Extract selected pages</h2><p>Enter pages such as 1,3,5-8 to create a smaller PDF containing only those pages.</p></section></main>}
