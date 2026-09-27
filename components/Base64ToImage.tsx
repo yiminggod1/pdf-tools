@@ -1,0 +1,5 @@
+"use client";
+import {useState} from "react";
+export default function Base64ToImage(){const [value,setValue]=useState("");const [msg,setMsg]=useState("");
+ const run=()=>{try{const v=value.trim();if(!v.startsWith("data:image/"))throw new Error();const a=document.createElement("a");a.href=v;a.download="decoded-image";a.click();setMsg("Your image download was started.")}catch{setMsg("Paste a valid image data URL beginning with data:image/.")}};
+ return <div className="drop"><h2>Base64 to Image</h2><p>Paste an image data URL and save it as an image without uploading it.</p><textarea value={value} onChange={e=>{setValue(e.target.value);setMsg("")}} placeholder="data:image/png;base64,..." style={{width:"100%",minHeight:180}}/><button className="btn" disabled={!value.trim()} onClick={run}>Create Image</button>{msg&&<div className="notice">{msg}</div>}</div>}
