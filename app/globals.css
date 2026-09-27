@@ -25,3 +25,18 @@
 .toolpage .btn{min-height:44px;padding:12px 20px;border-radius:11px;letter-spacing:.01em}
 .notice{border-radius:13px}
 @media(max-width:520px){.filePicker{padding:13px}.filePickerHint{display:none}}
+
+/* Refined icon language and stronger tactile controls */
+.brandmark,.categoryIcon,.primarycard .icon,.compactIcon,.heroBadges span,.benefits strong{display:flex;align-items:center;justify-content:center}
+.brandmark svg,.categoryIcon svg,.primarycard .icon svg,.compactIcon svg{flex:none}
+.heroBadges span{gap:8px;justify-content:flex-start}
+.heroBadges svg{color:#9bc9ff}
+.benefits strong{justify-content:flex-start;gap:7px}
+.benefits svg{color:#2b72d2}
+.categoryIcon{background:radial-gradient(circle at 30% 25%,#fff8,#d9e8fb),linear-gradient(145deg,#edf4ff,#d6e7ff)}
+.primarycard .icon svg,.compactIcon svg,.categoryIcon svg{filter:drop-shadow(0 1px 1px #1f4d8120)}
+.filePickerClear{border:1px solid #c6d5e6;border-radius:9px;padding:8px 11px;background:#fff;color:#526b89;font-size:12px;font-weight:800;cursor:pointer}
+.filePickerClear:hover{background:#f1f6fc;border-color:#9db9d9;color:#2366b7}
+.filePickerClear:focus-visible{outline:3px solid #8bb8ee;outline-offset:2px}
+.filePickerName{flex:1;text-align:left}
+@media(max-width:520px){.filePickerName{text-align:center}.filePickerClear{width:100%}}
