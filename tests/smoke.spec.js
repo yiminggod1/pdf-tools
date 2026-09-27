@@ -3,7 +3,7 @@ const JSZip = require("jszip");
 const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
 
 const routes = [
-  "merge-pdf","split-pdf","rotate-pdf","image-to-pdf","pdf-to-jpg","resize-image","compress-image","convert-image",
+  "merge-pdf","split-pdf","rotate-pdf","image-to-pdf","pdf-to-jpg","pdf-to-png","resize-image","compress-image","convert-image",
   "delete-pages-from-pdf","extract-pages-from-pdf","jpg-to-pdf","png-to-pdf","add-pages-to-pdf","reorder-pdf",
   "watermark-pdf","number-pdf-pages","pdf-metadata","crop-image","rotate-image","flip-image","jpg-to-png",
   "png-to-jpg","jpg-to-webp","png-to-webp","webp-to-jpg","webp-to-png","image-to-base64","base64-to-image",
